@@ -1,0 +1,75 @@
+{%extends 'base.html'%} {%load thumbnail%} {%load store_tags%} {%block content%}
+<nav>
+  <ol class="breadcrumb mt-2">
+    <li class="breadcrumb-item">
+      <a href="{% url 'store:product_list' %}?category={{product.category.id}}"
+        >{{product.category}}</a
+      >
+    </li>
+    <li class="breadcrumb-item active">{{product.name}}</li>
+  </ol>
+</nav>
+<div class="row mt-2 mb-4">
+  <div class="col-lg-4 col-md-6 col-12">
+    <img
+      src="{% thumbnail product.image 500x0 %}"
+      alt="{{product.name}}"
+      class="img-fluid mx-auto d-block"
+    />
+  </div>
+  <div class="col-lg-8 col-md-6 col-12">
+    <h2>{{product.name}}</h2>
+    <h3 class="font-weight-light">Rs. {{product.price}} only</h3>
+    <h4>
+      {% if product.availibility %}
+      <span class="badge badge-success">In stock</span>
+      {% else %}
+      <span class="badge badge-danger">Out of stock</span>
+      {% endif %}
+    </h4>
+    <p>{{product.description}}</p>
+    <p>
+      Bought by <b>{{product.total_purchases}}</b>
+      customer{{product.total_purchases|pluralize}}.
+    </p>
+    {% if product.id in cart.keys %}
+    <form
+      action="{% url 'cart:add' product.id %}"
+      method="POST"
+      class="form-row"
+    >
+      {% csrf_token %}
+      <div class="col-lg-6 mt-2">
+        {% for field in form %}
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">{{field.label}}</span>
+          </div>
+          {{field}}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="col-lg-6 align-items-center d-flex mt-2">
+        <button class="btn btn-primary btn-block mr-2" type="submit">
+          <i class="fa fa-cart-plus fa-lg mr-2"></i> Update
+        </button>
+        <a
+          href="{% url 'cart:remove' product.id %}"
+          class="btn btn-danger btn-block m-0"
+        >
+          <i class="fa fa-times fa-lg mr-2"></i> Remove
+        </a>
+      </div>
+    </form>
+    {% elif product.availibility %}
+    <a href="{% url 'cart:add' product.id %}" class="btn btn-primary">
+      <i class="fa fa-cart-plus fa-lg mr-2"></i> Add to cart
+    </a>
+    {% else %}
+    <button class="btn btn-primary" disabled>
+      <i class="fa fa-cart-plus fa-lg mr-2"></i> Add to cart
+    </button>
+    {% endif %}
+  </div>
+</div>
+{%get_similar product.id product.price product.category %} {% endblock content%}
