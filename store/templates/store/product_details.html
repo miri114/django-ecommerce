@@ -1,8 +1,9 @@
-{%extends 'base.html'%} {%load thumbnail%} {%load store_tags%} {%block content%}
+{%extends 'base.html'%} {%load thumbnail%} {%load store_tags%} {% block title %}
+{{product.name}} {% endblock title %} {%block content%}
 <nav>
   <ol class="breadcrumb mt-2">
     <li class="breadcrumb-item">
-      <a href="{% url 'store:product_list' %}?category={{product.category.id}}"
+      <a href="{% url 'store:product_category' product.category.slug%}"
         >{{product.category}}</a
       >
     </li>
@@ -33,12 +34,7 @@
       customer{{product.total_purchases|pluralize}}.
     </p>
     {% if product.id in cart.keys %}
-    <form
-      action="{% url 'cart:add' product.id %}"
-      method="POST"
-      class="form-row"
-    >
-      {% csrf_token %}
+    <form action="{% url 'cart:add' product.id %}" class="form-row">
       <div class="col-lg-6 mt-2">
         {% for field in form %}
         <div class="input-group">

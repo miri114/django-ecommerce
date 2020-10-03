@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from cart.cart import Cart
 from store.models import Product
 from django.contrib import messages
-from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from cart.forms import CartForm
 # Create your views here.
@@ -10,19 +9,18 @@ from cart.forms import CartForm
 
 @login_required
 def add_to_cart(request, id):
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=id, availibility=True)
     cart = Cart(request)
-    if(product.availibility):
-        if request.POST:
-            form = CartForm(request.POST)
-            if form.is_valid():
-                quantity = form.cleaned_data['quantity']
-                cart.add(id, product.price, quantity)
-            return redirect('cart:cart_details')
-        else:
-            cart.add(id, product.price)
-            messages.success(request, f"{product.name} added to cart.")
-            return redirect('store:product_list')
+    if request.POST:
+        form = CartForm(request.POST)
+        if form.is_valid():
+            quantity = form.cleaned_data['quantity']
+            cart.add(id, product.price, quantity)
+        return redirect('cart:cart_details')
+    else:
+        cart.add(id, product.price)
+        messages.success(request, f"{product.name} added to cart.")
+        return redirect('store:product_list')
 
 
 @login_required

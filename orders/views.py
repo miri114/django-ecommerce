@@ -26,7 +26,7 @@ class CreateOrder(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         cart = Cart(self.request)
         if len(cart) == 0:
-            return redirect(self.get_success_url())
+            return redirect('cart:cart_details')
         order = form.save(commit=False)
         order.user = self.request.user
         order.total_price = cart.get_total_price()

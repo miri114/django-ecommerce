@@ -1,11 +1,18 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} {% block title %}Your Orders {% endblock title %}
+{% block content %}
 <h1 class="font-weight-light mt-3">Your Orders</h1>
 <hr />
 <ul class="list-group my-3">
   {% for order in orders %}
   <li class="list-group-item">
     <h5 class="mb-2">
+      {% if order.status == 'Delivered' %}
+      <span class="badge badge-success font-weight-light">
+        {{order.status}}
+      </span>
+      {% else %}
       <span class="badge badge-info font-weight-light">{{order.status}}</span>
+      {% endif %}
     </h5>
     <h3>
       <a href="{% url 'orders:details' order.id %}">Order id - {{order.id}}</a>

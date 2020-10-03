@@ -13,6 +13,9 @@ class Category(models.Model):
         verbose_name = "category"
         verbose_name_plural = "categories"
 
+    def get_absolute_path(self):
+        return reverse("store:product_category", kwargs={'category_slug': self.slug})
+
     def __str__(self):
         return self.name
 
@@ -31,6 +34,7 @@ class Product(models.Model):
 
     class Meta:
         index_together = ('id', 'slug')
+        ordering = ('-created',)
 
     def __str__(self):
         return self.name

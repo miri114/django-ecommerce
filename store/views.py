@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import generic
-from store.models import Product
+from store.models import Product, Category
 from django_filters.views import FilterView
 from store.filters import ProductFilter
 from cart.forms import CartForm
@@ -17,6 +17,19 @@ class ProductList(FilterView):
     context_object_name = "products"
     template_name = "store/product_list.html"
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if 'category_slug' in self.kwargs:
+            qs = qs.filter(category__slug=self.kwargs['category_slug'])
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'category_slug' in self.kwargs:
+            context["category"] = Category.objects.get(
+                slug=self.kwargs['category_slug'])
+        return context
+
 
 class ProdcutDetails(generic.DetailView):
     model = Product
@@ -30,4 +43,11 @@ class ProdcutDetails(generic.DetailView):
 
     def get_queryset(self):
         product = super().get_queryset()
-        return product.annotate(total_purchases=Count('ordered'))
+        return product.select_related('category').annotate(
+            total_purchases=Count('ordered'))
+
+
+class CategoriesList(generic.ListView):
+    template_name = 'store/categories_list.html'
+    context_object_name = "categories"
+    queryset = Category.objects.all().annotate(num_products=Count('products'))
