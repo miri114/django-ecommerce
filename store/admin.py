@@ -8,6 +8,7 @@ from store.models import Category, Product
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
+    list_per_page = 24
 
 
 @admin.register(Product)
@@ -16,3 +17,4 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ('category',)
     list_editable = ('price', 'availibility')
+    list_per_page = 24

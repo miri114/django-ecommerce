@@ -24,20 +24,20 @@
           <td>Rs.{{i.product.price}}</td>
           <td>
             <form
-              action="{% url 'cart:add' i.product.id %}"
+              action="{% url 'cart:add' %}"
               class="form-inline"
               method="POST"
             >
-              {% csrf_token %} {% for field in i.form %}
+              {% csrf_token %}
+              {{i.form.product_id}}
               <div class="input-group">
-                {{field}}
+                {{i.form.quantity}}
                 <div class="input-group-append">
                   <button class="btn btn-primary btn-sm" type="submit">
                     <i class="fa fa-shopping-cart mr-1"></i> Update
                   </button>
                 </div>
               </div>
-              {% endfor %}
             </form>
           </td>
           <td>

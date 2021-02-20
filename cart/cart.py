@@ -10,7 +10,6 @@ class Cart:
         if(quantity == 0):
             self.remove(productid)
             return
-        print(type(quantity), type(price))
         self.cart[productid] = {'quantity': quantity, 'price': price}
         self.save()
 
@@ -36,6 +35,11 @@ class Cart:
 
     def keys(self):
         return map(lambda k: int(k), self.cart.keys())
+
+    def __getitem__(self, arg):
+        if isinstance(arg, str):
+            return self.cart[arg]['quantity']
+        raise TypeError('Slicing cart is not allowed.')
 
 
 def cart_preprocessor(request):

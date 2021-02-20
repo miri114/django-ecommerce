@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, Http404
 from django.views import generic
 from orders.forms import OrderForm
 from orders.models import Order, OrderItem
@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class CreateOrder(LoginRequiredMixin, generic.CreateView):
     form_class = OrderForm
-    template_name = "orders/place_order.html"
+    template_name = 'orders/place_order.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,24 +39,24 @@ class CreateOrder(LoginRequiredMixin, generic.CreateView):
                 OrderItem(order=order, product=i, quantity=q, total=q*i.price))
         OrderItem.objects.bulk_create(orderitems)
         cart.clear()
-        messages.success(self.request, "Your order is successfully placed.")
+        messages.success(self.request, 'Your order is successfully placed.')
         return redirect('store:product_list')
 
 
 class MyOrders(LoginRequiredMixin, generic.ListView):
     model = Order
-    template_name = "orders/order_list.html"
-    context_object_name = "orders"
+    template_name = 'orders/order_list.html'
+    context_object_name = 'orders'
     paginate_by = 20
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).annotate(total_items=Count("items"))
+        return Order.objects.filter(user=self.request.user).annotate(total_items=Count('items'))
 
 
 class OrderDetails(LoginRequiredMixin, generic.DetailView):
     model = Order
     context_object_name = 'order'
-    template_name = "orders/order_details.html"
+    template_name = 'orders/order_details.html'
 
     def get_queryset(self, **kwargs):
         objs = super().get_queryset(**kwargs)
@@ -65,9 +65,15 @@ class OrderDetails(LoginRequiredMixin, generic.DetailView):
 
 class OrderInvoice(LoginRequiredMixin, generic.DetailView):
     model = Order
-    context_object_name = "order"
-    template_name = "orders/order_invoice.html"
+    context_object_name = 'order'
+    template_name = 'orders/order_invoice.html'
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(user=self.request.user).prefetch_related('items', 'items__product')
+        return qs.prefetch_related('items', 'items__product')
+
+    def get_object(self, **kwargs):
+        obj = super().get_object(**kwargs)
+        if obj.user_id == self.request.user.id or self.request.user.is_superuser:
+            return obj
+        raise Http404

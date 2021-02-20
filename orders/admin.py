@@ -5,6 +5,7 @@ from orders.models import Order, OrderItem
 
 class OrderItemTabuler(admin.TabularInline):
     model = OrderItem
+    extra = 0
     raw_id_fields = ['product', ]
 
 
@@ -16,3 +17,4 @@ class OrderAdmin(admin.ModelAdmin):
     raw_id_fields = ['user']
     list_editable = ['status', 'paid']
     inlines = [OrderItemTabuler]
+    list_per_page = 24

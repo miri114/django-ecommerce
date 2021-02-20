@@ -11,3 +11,8 @@ def get_similar(id, price, category, count=5):
     products = Product.objects.filter(
         category=category, price__gte=min_p, price__lte=max_p).exclude(pk=id)[:count]
     return {'products': products}
+
+
+@register.filter
+def getattr(obj, arg):
+    return obj[str(arg)]

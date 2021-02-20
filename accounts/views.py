@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
-from accounts.forms import UserEditForm
+from django.forms import modelform_factory, widgets
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views import generic
@@ -19,6 +19,8 @@ class Register(SuccessMessageMixin, generic.CreateView):
 
 @login_required
 def profile(req):
+    UserEditForm = modelform_factory(
+        get_user_model(), fields=('first_name', 'last_name', 'username'))
     form = UserEditForm(instance=req.user)
     if req.method == "POST":
         form = UserEditForm(instance=req.user, data=req.POST)

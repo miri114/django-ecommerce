@@ -14,8 +14,8 @@ class ProductList(FilterView):
     queryset = Product.objects.all()
     paginate_by = 20
     filterset_class = ProductFilter
-    context_object_name = "products"
-    template_name = "store/product_list.html"
+    context_object_name = 'products'
+    template_name = 'store/product_list.html'
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -25,21 +25,13 @@ class ProductList(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if 'category_slug' in self.kwargs:
-            context["category"] = Category.objects.get(
-                slug=self.kwargs['category_slug'])
         return context
 
 
 class ProdcutDetails(generic.DetailView):
     model = Product
-    template_name = "store/product_details.html"
-    context_object_name = "product"
-
-    def get_context_data(self, **kwargs):
-        context = super(ProdcutDetails, self).get_context_data(**kwargs)
-        context['form'] = CartForm
-        return context
+    template_name = 'store/product_details.html'
+    context_object_name = 'product'
 
     def get_queryset(self):
         product = super().get_queryset()
@@ -49,5 +41,5 @@ class ProdcutDetails(generic.DetailView):
 
 class CategoriesList(generic.ListView):
     template_name = 'store/categories_list.html'
-    context_object_name = "categories"
+    context_object_name = 'categories'
     queryset = Category.objects.all().annotate(num_products=Count('products'))

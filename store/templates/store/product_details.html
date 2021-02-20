@@ -3,9 +3,7 @@
 <nav>
   <ol class="breadcrumb mt-2">
     <li class="breadcrumb-item">
-      <a href="{% url 'store:product_category' product.category.slug%}"
-        >{{product.category}}</a
-      >
+      <a href="{{product.category.get_absolute_url}}">{{product.category}}</a>
     </li>
     <li class="breadcrumb-item active">{{product.name}}</li>
   </ol>
@@ -19,7 +17,7 @@
     />
   </div>
   <div class="col-lg-8 col-md-6 col-12">
-    <h2>{{product.name}}</h2>
+    <h2 class="mt-md-0 mt-2">{{product.name}}</h2>
     <h3 class="font-weight-light">Rs. {{product.price}} only</h3>
     <h4>
       {% if product.availibility %}
@@ -33,38 +31,51 @@
       Bought by <b>{{product.total_purchases}}</b>
       customer{{product.total_purchases|pluralize}}.
     </p>
+    {% if user.is_authenticated %}
     {% if product.id in cart.keys %}
-    <form action="{% url 'cart:add' product.id %}" class="form-row">
-      <div class="col-lg-6 mt-2">
-        {% for field in form %}
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text">{{field.label}}</span>
-          </div>
-          {{field}}
+    <form action="{% url 'cart:add' %}" method="POST" style="max-width: 400px">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{product.id}}">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Quantity</span>
         </div>
-        {% endfor %}
-      </div>
-      <div class="col-lg-6 align-items-center d-flex mt-2">
-        <button class="btn btn-primary btn-block mr-2" type="submit">
-          <i class="fa fa-cart-plus fa-lg mr-2"></i> Update
-        </button>
-        <a
-          href="{% url 'cart:remove' product.id %}"
-          class="btn btn-danger btn-block m-0"
-        >
-          <i class="fa fa-times fa-lg mr-2"></i> Remove
-        </a>
+        <input
+          type="number"
+          min="1"
+          name="quantity"
+          value="{{cart|getattr:product.id}}"
+          required="required"
+          class="form-control"
+        />
+        <div class="input-group-append btn-group">
+          <button class="btn btn-primary" type="submit">
+            <i class="fa fa-cart-plus fa-lg mr-2"></i> Update
+          </button>
+          <a href="{% url 'cart:remove' product.id %}" class="btn btn-danger">
+            <i class="fa fa-times fa-lg mr-2"></i> Remove
+          </a>
+        </div>
       </div>
     </form>
     {% elif product.availibility %}
-    <a href="{% url 'cart:add' product.id %}" class="btn btn-primary">
-      <i class="fa fa-cart-plus fa-lg mr-2"></i> Add to cart
-    </a>
+    <form method="POST" action="{% url 'cart:add' %}">
+      {% csrf_token %}
+      <input type="hidden" name="quantity" value="1" />
+      <input type="hidden" name="product_id" value="{{product.id}}" />
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-cart-plus fa-lg mr-2"></i> Add to cart
+      </button>
+    </form>
     {% else %}
     <button class="btn btn-primary" disabled>
       <i class="fa fa-cart-plus fa-lg mr-2"></i> Add to cart
     </button>
+    {% endif %}
+    {% else %}
+    <a href="{% url 'login' %}" class="btn btn-primary" disabled>
+      <i class="fa fa-sign-in fa-lg mr-2"></i> Login to add to cart
+    </a>
     {% endif %}
   </div>
 </div>
