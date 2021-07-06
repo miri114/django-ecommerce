@@ -94,8 +94,18 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 DATABASES = {}
 
-DATABASES['default'] = dj_database_url.config(
-    default='sqlite:///db.sqlite3')
+# DATABASES['default'] = dj_database_url.config(
+#     default='sqlite:///db.sqlite3')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'electronic',
+        'USER': 'miri',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -127,7 +137,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
